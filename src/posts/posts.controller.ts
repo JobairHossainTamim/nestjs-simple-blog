@@ -24,6 +24,8 @@ import { Post as PostEntity } from './entities/post.entity';
 import { JwtAuthGuard } from 'src/auth/guard/jwt.auth.guard';
 import { CurrentUser } from 'src/auth/decorator/current-user.decorator';
 import { Users } from 'src/auth/entities/user.entity';
+import { FindPostQueryDto } from './dto/find.post.query.dto';
+import { PaginationResponse } from 'src/common/interface/pagination.response.interface';
 
 @Controller('posts')
 export class PostsController {
@@ -34,8 +36,10 @@ export class PostsController {
    * Returns all posts, optionally filtered by title (case-insensitive search).
    */
   @Get()
-  async findAll(): Promise<PostEntity[]> {
-    return this.postsService.findAll();
+  async findAll(
+    @Query() query: FindPostQueryDto,
+  ): Promise<PaginationResponse<PostEntity>> {
+    return this.postsService.findAll(query);
   }
 
   /**
