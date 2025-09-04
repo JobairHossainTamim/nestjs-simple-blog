@@ -10,6 +10,7 @@ import { RegisterDTO } from './dto/register.dto';
 import bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
+import { EventService } from 'src/event/event.service';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +18,7 @@ export class AuthService {
     @InjectRepository(Users)
     private usersRepository: Repository<Users>,
     private jwtService: JwtService,
+    private readonly userEventService: EventService,
   ) {}
 
   async register(registerDto: RegisterDTO) {
@@ -40,6 +42,9 @@ export class AuthService {
     });
 
     const savedUser = await this.usersRepository.save(newCreatedUser);
+
+    // user event
+    this.userEventService.emitUserRegistered(savedUser);
 
     const { password, ...result } = savedUser;
     return {
